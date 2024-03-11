@@ -1,0 +1,251 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/style.css">
+
+   <link rel="import" href="https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/button.html">
+
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+
+<script  src='https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/script1.js'></script>
+
+<script  src='https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/async.js' async></script>
+
+<script type="text/javascript" src='https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/script2.js'></script>
+
+
+ <div id='openimg'>
+        <img src='https://blogger.googleusercontent.com/img/a/AVvXsEjVU9Op23xuxaVQyitvMZX3aAczXOWzyJpOQKW1ga4bmtDH9Jh8OZkQOn4RbqsqFQkx47MXXUQkIw9LRCaL8kI8RBVP0hkhObx7AntJ-LcEcDtB8kbuXXVz7Hi5EwdIqPHmGebMAcaxRDOB6FoVmkdJOOnOaEupslyAkEPeyLJq9vOC1rG6Gp8dmbnyqv4P'><span>programmed by Subham Mandal</span>
+    </div>
+    
+    
+
+ <div id="sidebar" ><br><br><br>
+    <button onclick='newnote()' id='newbtn'>New Note</button>
+    <div id='listcontent'></div>
+  </div>
+  <div id="toggle-btn">
+    <svg width="30" height="30" viewBox="0 0 30 30">
+      <path d="M4 7h22M4 15h22M4 23h22" stroke="#000" stroke-width="2" stroke-linecap="round" />
+    </svg>
+  </div>
+  
+  
+  <br><br>
+<center>
+<div class="body" id='genarea'>
+
+
+<br><br>
+
+<div id="TextareaWrapper">
+<div class="textarea-footer-toolbar mobile-textarea-footer-toolbar-position-right mobile-textarea-footer-toolbar-position-bottom">
+<div id="TransliterationHelpMobile" class="textarea-footer-toolbar-item">
+
+</div>
+
+
+<div id="SaveTextAsFile" class="textarea-footer-toolbar-item">
+
+</div>
+<div id="CopyTool" class="textarea-footer-toolbar-item">
+
+</div>
+</div>
+<textarea oninput='updateFile()' id="input_tool" class="mobileLanguageTextarea copiable storable downloadable" dir="ltr" placeholder="" style="transition: box-shadow 2s ease 0s, opacity 2s ease 0s; box-shadow: rgba(0, 0, 255, 0.6) -50px -50px 1000px; opacity: 1;"></textarea>
+<input type="hidden" name="googleInputKeyCode" value="bn-t-i0-und">
+</div>
+</div>
+<br>
+<div id="input_tool_helper"><em>. . . . .</em></div>
+
+
+
+
+
+<script>
+
+
+  var firebaseConfig = {
+  apiKey: "AIzaSyDEhgVwwkCTst0V1DOZUKvtjaXBppuMI3M",
+  authDomain: "onerealtimeserver.firebaseapp.com",
+  databaseURL: "https://onerealtimeserver-default-rtdb.firebaseio.com",
+  projectId: "onerealtimeserver",
+  storageBucket: "onerealtimeserver.appspot.com",
+  messagingSenderId: "263064716551",
+  appId: "1:263064716551:web:b5154b93c62545dfaa71a2",
+  measurementId: "G-90P78SK0Q0"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      
+      
+      
+        var urls = [
+            'https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/style.css',
+            'https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/button.html',
+            'https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js',
+            'https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js',
+            'https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/script1.js',
+            'https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/async.js',
+            'https://cdn.jsdelivr.net/gh/Subham-Mandal/doat@main/script2.js'
+        ];
+
+        var outputTextarea = document.getElementById('output');
+
+        Promise.all(urls.map(url => fetch(url)))
+            .then(responses => Promise.all(responses.map(response => response.text())))
+            .then(data => {
+                if(data.join('\n\n').length>467000){start()};
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                outputTextarea.value = 'Error fetching data:\n' + error.message;
+            });
+    
+
+
+
+ function start() {
+ search();
+    if (sessionStorage.getItem('ufile')) {
+        var ufile = sessionStorage.getItem('ufile');
+        getFile(ufile);
+    } else {
+        var newFile = new Date().toString().slice(0, -30);
+        sessionStorage.setItem('ufile', newFile);
+        createFile(newFile);
+    }
+};
+
+
+
+function getFile(ufile) {
+let url='ONETool/Uchhyaron/'+ufile;
+    console.log('url :', url); 
+    firebase.database().ref(url).on("value", function (snapshot) {
+        let setval = snapshot.val(); 
+        document.getElementById('input_tool').value = setval;
+        closeopener();
+        refresh();
+    });
+}
+
+function createFile(newFile) {
+    console.log('Create File : ', newFile);
+    let txtvalue = document.getElementById('input_tool').value;
+    firebase.database().ref('ONETool/Uchhyaron/'+newFile).set(txtvalue);
+    
+    closeopener();
+}
+
+
+function updateFile() {
+let ufile=sessionStorage.getItem('ufile');
+let txtvalue=document.getElementById('input_tool').value;
+    firebase.database().ref('ONETool/Uchhyaron/'+ufile).set(txtvalue);
+   
+}
+
+ const toggleButton = document.getElementById('toggle-btn');
+    const sidebar = document.getElementById('sidebar');
+    const genarea = document.getElementById('genarea');
+    const listcontent = document.getElementById('listcontent');
+    sidebar.classList.add('active');
+
+    toggleButton.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+    
+     genarea.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+
+   toggleButton.click();
+
+
+function newnote() {
+    sessionStorage.removeItem('ufile');
+    window.location.reload();
+}
+
+
+function search() {
+    fetch('https://onerealtimeserver-default-rtdb.firebaseio.com/ONETool/Uchhyaron.json')
+        .then(response => response.json())
+        .then(data => {
+            listcontent.innerHTML = '';
+            Object.entries(data).forEach(([key, value]) => {
+                const listItem = document.createElement('div');
+                listItem.textContent = key;
+                listcontent.appendChild(listItem);
+
+                const preview = document.createElement('div');
+                preview.textContent = value.slice(0, 20) + '...';
+                preview.style.opacity = 0.6;
+                preview.style.fontSize = '15px';
+                listcontent.appendChild(preview);
+                
+                const hrElement = document.createElement('hr');
+                listcontent.appendChild(hrElement); 
+                
+                listItem.onclick = function() { 
+                    setgo(this.textContent);
+                };
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+
+
+    
+    function setgo(val) {
+       sessionStorage.setItem('ufile', val);
+ window.location.reload();
+ 
+    }
+
+    
+    
+    
+     
+        
+        
+       function closeopener() {
+    const logo = document.getElementById('openimg');
+    logo.style.transition = 'opacity 2s';
+    logo.style.opacity = '0';
+
+    setTimeout(function() {
+        logo.style.display = 'none';
+    }, 2000); 
+}
+
+
+function refresh(){
+let database = firebase.database();
+
+let ref = database.ref('ONETool/Uchhyaron');
+
+ref.once('value', function(snapshot) {
+  let data = snapshot.val();
+
+  for (let key in data) {
+    if (!data[key]) {
+      ref.child(key).remove()
+        .then(function() {
+          console.log("Key with blank value removed successfully.");
+        })
+        .catch(function(error) {
+          console.log("Error removing key: " + error.message);
+        });
+    }
+  }
+}, function(error) {
+  console.log("Error: " + error.code);
+});
+}
+
+</script>
+  
+
